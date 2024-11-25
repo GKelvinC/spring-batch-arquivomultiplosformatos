@@ -1,27 +1,30 @@
 package com.springbatch.arquivomultiplosformatos.step;
 
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.batch.item.file.MultiResourceItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
+
+import com.springbatch.arquivomultiplosformatos.dominio.Cliente;
 
 @Configuration
 public class LeituraArquivoMultiplosFormatosStepConfig {
-	@Autowired
-	public StepBuilderFactory stepBuilderFactory;
 
-	@Bean
-	public Step leituraArquivoMultiplosFormatosStep(
-			FlatFileItemReader leituraArquivoMultiplosFormatosReader,
-			ItemWriter leituraArquivoMultiplosFormatosItemWriter) {
-		return stepBuilderFactory
-				.get("leituraArquivoMultiplosFormatosStep")
-				.chunk(1)
-				.reader(leituraArquivoMultiplosFormatosReader)
-				.writer(leituraArquivoMultiplosFormatosItemWriter)
-				.build();
-	}
+    @Bean
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    Step leituraArquivoMultiplosFormatosStep(
+            final MultiResourceItemReader multiplosArquivosClienteTransacaoReader,
+            final ItemWriter leituraArquivoMultiplosFormatosItemWriter,
+			final JobRepository jobRepository,
+			final PlatformTransactionManager platformTransactionManager) {
+        return new StepBuilder("leituraArquivoMultiplosFormatosStep",jobRepository)
+                .<Cliente,Cliente>chunk(1,platformTransactionManager)
+                .reader(multiplosArquivosClienteTransacaoReader)
+                .writer(leituraArquivoMultiplosFormatosItemWriter)
+                .build();
+    }
 }

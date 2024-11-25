@@ -1,0 +1,15 @@
+spring:
+  threads:
+    virtual:
+      enabled: false
+  datasource:
+    jdbcUrl: "jdbc:postgresql://localhost:5432/spring_batch_db?useUnicode=true&characterEncoding=UTF-8&useTimezone=true&serverTimezone=UTC"
+    username: "admindba"
+    password: "admindba"
+    hikari:
+      schema: "spring_batch"
+      driver-class-name: "org.postgresql.Driver"
+
+  batch:
+    jdbc:
+      initialize-schema: always
